@@ -14,7 +14,7 @@ function App() {
     formData.append("conversionType", type);
 
     try {
-      const res = await axios.post("http://localhost:5000/convert", formData);
+      const res = await axios.post("pdf-word-production.up.railway.app", formData);
       setDownloadUrl(res.data.downloadUrl);
     } catch (err) {
       alert("Conversion failed.");
