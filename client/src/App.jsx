@@ -15,7 +15,7 @@ function App() {
 
     try {
       // ✅ Fix: Add http:// in URL
-      const res = await axios.post("https://pdf-word-production.up.railway.app/", formData);
+      const res = await axios.post("https://pdf-word-production.up.railway.app/convert/pdf-to-word", formData);
       setDownloadUrl(res.data.downloadUrl);
     } catch (err) {
       console.error(err);
