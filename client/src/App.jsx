@@ -14,9 +14,11 @@ function App() {
     formData.append("conversionType", type);
 
     try {
-      const res = await axios.post("pdf-word-production.up.railway.app/convert", formData);
+      // ✅ Fix: Add http:// in URL
+      const res = await axios.post("https://pdf-word-production.up.railway.app/convert", formData);
       setDownloadUrl(res.data.downloadUrl);
     } catch (err) {
+      console.error(err);
       alert("Conversion failed.");
     }
   };
@@ -30,15 +32,14 @@ function App() {
 
       {/* Main Content */}
       <div className="max-w-xl mx-auto mt-12 bg-white p-8 rounded-xl shadow-lg">
-        {/* Dual Color Toggle Boxes */}
+        {/* Toggle Conversion Type */}
         <div className="flex justify-between mb-6">
           <div
             onClick={() => setType("pdf-to-word")}
             className={`w-1/2 mr-2 p-6 text-center text-lg font-medium rounded-lg cursor-pointer
               ${type === "pdf-to-word"
                 ? "bg-gradient-to-tr from-blue-400 to-indigo-500 text-white border-2 border-blue-600"
-                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}
-            `}
+                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}`}
           >
             PDF ➡ Word
           </div>
@@ -48,8 +49,7 @@ function App() {
             className={`w-1/2 ml-2 p-6 text-center text-lg font-medium rounded-lg cursor-pointer
               ${type === "word-to-pdf"
                 ? "bg-gradient-to-tr from-pink-400 to-purple-500 text-white border-2 border-pink-600"
-                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}
-            `}
+                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}`}
           >
             Word ➡ PDF
           </div>
@@ -73,7 +73,7 @@ function App() {
           🔄 Convert File
         </button>
 
-        {/* Download Section */}
+        {/* Download Link */}
         {downloadUrl && (
           <div className="mt-6 text-center">
             <a
@@ -90,6 +90,6 @@ function App() {
       </div>
     </div>
   );
-}
+} 
 
 export default App;
