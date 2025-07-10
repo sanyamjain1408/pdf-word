@@ -11,12 +11,22 @@ function App() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("conversionType", type);
+
+    // ✅ Choose correct backend API based on conversion type
+    const endpoint =
+      type === "pdf-to-word"
+        ? "https://pdf-word-production.up.railway.app/convert/pdf-to-word"
+        : "https://pdf-word-production.up.railway.app/convert/word-to-pdf";
 
     try {
-      // ✅ Fix: Add http:// in URL
-      const res = await axios.post("https://pdf-word-production.up.railway.app/convert/pdf-to-word", formData);
-      setDownloadUrl(res.data.downloadUrl);
+      const res = await axios.post(endpoint, formData, {
+        responseType: "blob", // important for file download
+      });
+
+      // ✅ Create blob URL for download
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      setDownloadUrl(url);
     } catch (err) {
       console.error(err);
       alert("Conversion failed.");
@@ -35,21 +45,31 @@ function App() {
         {/* Toggle Conversion Type */}
         <div className="flex justify-between mb-6">
           <div
-            onClick={() => setType("pdf-to-word")}
+            onClick={() => {
+              setType("pdf-to-word");
+              setDownloadUrl(""); // reset
+            }}
             className={`w-1/2 mr-2 p-6 text-center text-lg font-medium rounded-lg cursor-pointer
-              ${type === "pdf-to-word"
-                ? "bg-gradient-to-tr from-blue-400 to-indigo-500 text-white border-2 border-blue-600"
-                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}`}
+              ${
+                type === "pdf-to-word"
+                  ? "bg-gradient-to-tr from-blue-400 to-indigo-500 text-white border-2 border-blue-600"
+                  : "bg-gray-100 border border-gray-300 hover:bg-gray-200"
+              }`}
           >
             PDF ➡ Word
           </div>
 
           <div
-            onClick={() => setType("word-to-pdf")}
+            onClick={() => {
+              setType("word-to-pdf");
+              setDownloadUrl(""); // reset
+            }}
             className={`w-1/2 ml-2 p-6 text-center text-lg font-medium rounded-lg cursor-pointer
-              ${type === "word-to-pdf"
-                ? "bg-gradient-to-tr from-pink-400 to-purple-500 text-white border-2 border-pink-600"
-                : "bg-gray-100 border border-gray-300 hover:bg-gray-200"}`}
+              ${
+                type === "word-to-pdf"
+                  ? "bg-gradient-to-tr from-pink-400 to-purple-500 text-white border-2 border-pink-600"
+                  : "bg-gray-100 border border-gray-300 hover:bg-gray-200"
+              }`}
           >
             Word ➡ PDF
           </div>
@@ -60,7 +80,15 @@ function App() {
           <label className="font-semibold">📎 Upload File:</label>
           <input
             type="file"
-            onChange={(e) => setFile(e.target.files[0])}
+            accept={
+              type === "pdf-to-word"
+                ? "application/pdf"
+                : ".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+            onChange={(e) => {
+              setFile(e.target.files[0]);
+              setDownloadUrl(""); // reset
+            }}
             className="block mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>
@@ -78,7 +106,7 @@ function App() {
           <div className="mt-6 text-center">
             <a
               href={downloadUrl}
-              download
+              download={type === "pdf-to-word" ? "converted.docx" : "converted.pdf"}
               target="_blank"
               rel="noreferrer"
               className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300"
@@ -90,6 +118,6 @@ function App() {
       </div>
     </div>
   );
-} 
+}
 
 export default App;
