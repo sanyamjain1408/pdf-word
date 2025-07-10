@@ -6,7 +6,7 @@ const fs = require("fs");
 const cors = require("cors");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ API: PDF to Word
+// ✅ PDF to Word
 app.post("/convert/pdf-to-word", upload.single("file"), (req, res) => {
   const file = req.file;
   const outputExt = ".docx";
@@ -32,7 +32,7 @@ app.post("/convert/pdf-to-word", upload.single("file"), (req, res) => {
   });
 });
 
-// ✅ API: Word to PDF
+// ✅ Word to PDF
 app.post("/convert/word-to-pdf", upload.single("file"), (req, res) => {
   const file = req.file;
   const outputExt = ".pdf";
@@ -47,5 +47,4 @@ app.post("/convert/word-to-pdf", upload.single("file"), (req, res) => {
   });
 });
 
-// Start server
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
