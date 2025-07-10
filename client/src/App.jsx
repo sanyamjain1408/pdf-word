@@ -12,7 +12,7 @@ function App() {
     const formData = new FormData();
     formData.append("file", file);
 
-    // ✅ Choose correct backend API based on conversion type
+    // ✅ Use full Railway backend URL
     const endpoint =
       type === "pdf-to-word"
         ? "https://pdf-word-production.up.railway.app/convert/pdf-to-word"
@@ -20,15 +20,15 @@ function App() {
 
     try {
       const res = await axios.post(endpoint, formData, {
-        responseType: "blob", // important for file download
+        responseType: "blob", // needed to get downloadable file
       });
 
-      // ✅ Create blob URL for download
+      // ✅ Create blob URL to download file
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
       setDownloadUrl(url);
     } catch (err) {
-      console.error(err);
+      console.error("Conversion failed:", err);
       alert("Conversion failed.");
     }
   };
@@ -87,7 +87,7 @@ function App() {
             }
             onChange={(e) => {
               setFile(e.target.files[0]);
-              setDownloadUrl(""); // reset
+              setDownloadUrl(""); // reset on new file select
             }}
             className="block mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
